@@ -6,9 +6,7 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,7 +21,6 @@ public class LoupanCommentCrawler {
 
     public void getContent(String loupanGroupIdString) {
         int pageIndex = 0;
-        loupanGroupIdString = "8626,8175";
         String[] loupanArray = loupanGroupIdString.split(",");
         List<String> loupanGroupIdList = Lists.newArrayList();
         for (int i = 0; i < loupanArray.length; i++) {
@@ -33,6 +30,7 @@ public class LoupanCommentCrawler {
         String urlFormat = "http://house.focus.cn/api/getdianping/?group_id=%s&city_id=1&page=%s&page_size=10";
         //遍历楼盘id获取楼盘评论内容
         for (String groupId : loupanGroupIdList) {
+            System.out.println("楼盘id:" + groupId);
             pageIndex++;
             String currentGroupContent = "";
             int page = 1;
@@ -63,7 +61,6 @@ public class LoupanCommentCrawler {
     }
     public String getCommentContent(String urlPath) {
         try {
-//            URL url = new URL("http://house.focus.cn/api/getdianping/?group_id=8626&city_id=1&page=1&page_size=10");
             URL url = new URL(urlPath);
             HttpURLConnection urlcon = (HttpURLConnection)url.openConnection();
             urlcon.connect();         //获取连接
@@ -74,7 +71,7 @@ public class LoupanCommentCrawler {
             String backContent = "";
             String line = "";
             while ((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
+//                System.out.println(line);
                 backContent += line;
             }
             //对返回的内容进行解析
@@ -89,7 +86,7 @@ public class LoupanCommentCrawler {
                 JSONObject tmp = (JSONObject)commentList.get(i);
                 String comment = (String)tmp.get("content");
                 currentPageString += comment + "\n";
-                System.out.println(comment);
+//                System.out.println(comment);
             }
             bufferedReader.close();
             inputStreamReader.close();
@@ -102,9 +99,47 @@ public class LoupanCommentCrawler {
         }
     }
 
+    public void readGroupIdFile(String filePath) {
+        try {
+            String encoding="GBK";
+            File file=new File(filePath);
+            if(file.isFile() && file.exists()){ //判断文件是否存在
+                InputStreamReader read = new InputStreamReader(
+                        new FileInputStream(file),encoding);//考虑到编码格式
+                BufferedReader bufferedReader = new BufferedReader(read);
+                String lineTxt = null;
+                int groupIdIndex = 0;
+                String groupContent = "";
+                while((lineTxt = bufferedReader.readLine()) != null){
+                    groupIdIndex++;
+                    groupContent += lineTxt + ",";
+                    if (groupIdIndex % 2 == 0) {
+                        if (groupContent.length() <= 0) {
+                            groupContent = "";
+                            continue;
+                        }
+                        groupContent = groupContent.substring(0, groupContent.length() - 1);
+                        this.getContent(groupContent);
+                        groupContent = "";
+                    }
+                }
+                if (groupContent.length() > 0) {
+                    groupContent = groupContent.substring(0, groupContent.length() - 1);
+                    this.getContent(groupContent);
+                }
+
+                read.close();
+            }else{
+                System.out.println("找不到指定的文件");
+            }
+        } catch (Exception e) {
+            System.out.println("读取文件内容出错");
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
         LoupanCommentCrawler loupanCommentCrawler = new LoupanCommentCrawler();
-        loupanCommentCrawler.getContent("8626,8175");
+        loupanCommentCrawler.readGroupIdFile("C:\\Users\\leoz\\Desktop\\hacker2017project\\groupId1.txt");
     }
 }
