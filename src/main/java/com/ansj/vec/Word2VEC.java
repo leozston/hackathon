@@ -13,22 +13,77 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.ansj.vec.domain.WordEntry;
+import com.ansj.vec.model.MatchResultBean;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class Word2VEC {
+	private static int mostSimilarLength = 100;
 
 	public static void main(String[] args) throws IOException {
 
 		Word2VEC word2VEC = new Word2VEC();
-		word2VEC.loadJavaModelSelf("/Users/liweipeng/myProject/hackathon/vectordata//wordvector.txt");
+//		word2VEC.loadJavaModelSelf("/Users/liweipeng/myProject/hackathon/vectordata//wordvector.txt");
+		word2VEC.loadJavaModelSelf("/Users/lvlonglong/hacker2017/wordvector_loupan.txt");
 		System.out.println("词的数量:" + word2VEC.wordMap.size());
+		//获取词典
+		List<String> dictionary = Lists.newArrayList();
+		for (Entry<String, float[]> entry : word2VEC.wordMap.entrySet()) {
+			dictionary.add(entry.getKey());
+		}
+
 		BufferedReader strin=new BufferedReader(new InputStreamReader(System.in));
+
+		List<String> groupInfoDictionary = Lists.newArrayList();
+		groupInfoDictionary.add("价格");
+		groupInfoDictionary.add("户型");
+		groupInfoDictionary.add("周边");
+		groupInfoDictionary.add("位置");
+		groupInfoDictionary.add("简介");
+
+
+		Map<String, float[]> groupDicVector = Maps.newHashMap();
+		for (String s : groupInfoDictionary) {
+			groupDicVector.put(s, SentenseHandler.getSentenceVerctor(s, word2VEC.wordMap));
+		}
+
+
+//		while (true)  {
+//			System.out.print("请输入一个字符串(-1结束)：");
+//			String sentence = strin.readLine();
+//			if (!sentence.equals("-1")){
+//				List<MatchResultBean> matchResultBeanList = Lists.newArrayList();
+//				float[] sentenceVector = SentenseHandler.getSentenceVerctor(sentence, word2VEC.wordMap);
+////				System.out.println("相近词：" + word2VEC.distance(sentence));
+//				for (Entry<String, float[]> entry : groupDicVector.entrySet()) {
+//					matchResultBeanList.add(MatchResultBean.of(entry.getKey(), SentenseHandler.getSimilar(sentenceVector, entry.getValue())));
+//				}
+//				Collections.sort(matchResultBeanList);
+//
+//				for (MatchResultBean m : matchResultBeanList) {
+//					System.out.println(m);
+//				}
+//			}else{
+//				break;
+//			}
+//		}
+
 		while (true)  {
 			System.out.print("请输入一个字符串(-1结束)：");
 			String sentence = strin.readLine();
 			if (!sentence.equals("-1")){
-				float[] sentenceVector = SentenseHandler.getSentenceVerctor(sentence, word2VEC.wordMap);
-				System.out.println("相近词：" + word2VEC.distance(sentence));
+				List<MatchResultBean> matchResultBeanList = Lists.newArrayList();
+				//获取输入语句的词向量
+				Map<String, Float> inputVectorMap = SentenseHandler.getSentenceSimilarVector(sentence, word2VEC.wordMap, mostSimilarLength);
+				for (Entry<String, float[]> entry : groupDicVector.entrySet()) {
+					Map<String, Float> currentPropertyVectorMap = SentenseHandler.getSentenceSimilarVector(entry.getKey(), word2VEC.wordMap, mostSimilarLength);
+					matchResultBeanList.add(MatchResultBean.of(entry.getKey(), SentenseHandler.getSentenceSimilar(inputVectorMap, currentPropertyVectorMap)));
+				}
+				Collections.sort(matchResultBeanList);
+
+				for (MatchResultBean m : matchResultBeanList) {
+					System.out.println(m);
+				}
 			}else{
 				break;
 			}
@@ -40,6 +95,9 @@ public class Word2VEC {
 	private int words;
 	private int size;
 	private int topNSize = 10;
+
+
+
 
 	/**
 	 * 加载模型

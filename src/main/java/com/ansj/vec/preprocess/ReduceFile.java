@@ -19,9 +19,12 @@ import com.huaban.analysis.jieba.JiebaSegmenter;
  */
 public class ReduceFile {
 //    private static String focus_data_pre = "/Users/lvlonglong/hacker2017/test";   //数据预处理之前路径
-    private static String focus_data_pre = "/Users/liweipeng/myProject/hackathon/predata";   //数据预处理之前路径
-    private static String focus_data_reduce = "/Users/liweipeng/myProject/hackathon/reducedata/reduce_data.txt";   //数据预处理之后路径
-    private static String stop_words_path = "/Users/liweipeng/myProject/hackathon/stopwords.txt";
+//    private static String focus_data_pre = "/Users/liweipeng/myProject/hackathon/predata";   //数据预处理之前路径
+    private static String focus_data_pre = "/Users/lvlonglong/hacker2017/crawldata/loupancomment";   //数据预处理之前路径
+//    private static String focus_data_reduce = "/Users/liweipeng/myProject/hackathon/reducedata/reduce_data.txt";   //数据预处理之后路径
+    private static String focus_data_reduce = "/Users/lvlonglong/hacker2017/crawldata/reduce_loupan_data.txt";
+//    private static String stop_words_path = "/Users/liweipeng/myProject/hackathon/stopwords.txt";
+    private static String stop_words_path = "/Users/lvlonglong/hacker2017/stopwords.txt";
     public static List<String> stop_words = Lists.newArrayList();
 
     private void readStopWords(String path) {
@@ -87,7 +90,7 @@ public class ReduceFile {
         String line = null;
         String fileContent = "";
         try {
-            while ((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null && line.length() > 0) {
                 List<String> currentLineWords = segmenter.sentenceProcess(line);
                 List<String> currentLineUnStopsWords = Lists.newArrayList();
                 for (String s : currentLineWords) {

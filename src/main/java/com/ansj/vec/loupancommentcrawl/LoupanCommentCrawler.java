@@ -16,7 +16,7 @@ import java.util.List;
  * Created by leoz on 2017/4/9.
  */
 public class LoupanCommentCrawler {
-    public static String loupanCommentPath = "C:\\Users\\leoz\\Desktop\\hacker2017project\\loupancomment\\";
+    public static String loupanCommentPath = "/Users/lvlonglong/hacker2017/crawldata/loupancomment1/";
 
 
     public void getContent(String loupanGroupIdString) {
@@ -27,7 +27,7 @@ public class LoupanCommentCrawler {
             loupanGroupIdList.add(loupanArray[i]);
         }
 
-        String urlFormat = "http://house.focus.cn/api/getdianping/?group_id=%s&city_id=1&page=%s&page_size=10";
+        String urlFormat = "http://house.focus.cn/api/getdianping/?group_id=%s&city_id=1&page=%s&page_size=100";
         //遍历楼盘id获取楼盘评论内容
         for (String groupId : loupanGroupIdList) {
             System.out.println("楼盘id:" + groupId);
@@ -49,9 +49,9 @@ public class LoupanCommentCrawler {
             try {
                 System.out.println("crawler have a rest");
                 if (pageIndex % 20 == 0) {
-                    Thread.sleep(1000 * 60);
+                    Thread.sleep(1000 * 10);
                 } else {
-                    Thread.sleep(1000 * 2);
+                    Thread.sleep(200);
                 }
             } catch (InterruptedException e) {
                 System.out.println("thread sleep error");
@@ -140,6 +140,7 @@ public class LoupanCommentCrawler {
 
     public static void main(String[] args) {
         LoupanCommentCrawler loupanCommentCrawler = new LoupanCommentCrawler();
-        loupanCommentCrawler.readGroupIdFile("C:\\Users\\leoz\\Desktop\\hacker2017project\\groupId1.txt");
+//        loupanCommentCrawler.readGroupIdFile("C:\\Users\\leoz\\Desktop\\hacker2017project\\groupId1.txt");
+        loupanCommentCrawler.readGroupIdFile("/Users/lvlonglong/hacker2017/groupId/shanghai.txt");
     }
 }
