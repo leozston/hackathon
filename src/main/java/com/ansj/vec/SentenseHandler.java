@@ -15,12 +15,15 @@ import com.huaban.analysis.jieba.JiebaSegmenter;
  * Created by liweipeng on 2017/4/7.
  */
 public class SentenseHandler {
-    public static float[] getSentenceVerctor(String sentense, Map<String, float[]> wordVectorMap){
+    /**
+     * 获取整个句子的词向量
+     * */
+    public static float[] getSentenceVerctor(String sentense, Map<String, float[]> wordVectorMap, List<String> extraDicWhenQuery){
         JiebaSegmenter segmenter = new JiebaSegmenter();
         List<String> sentenseLineWords = segmenter.sentenceProcess(sentense);
         List<String> sentenseUnStopsWords = Lists.newArrayList();
         for (String s : sentenseLineWords) {
-            if (!ReduceFile.stop_words.contains(s)) {
+            if (!ReduceFile.stop_words.contains(s) && !extraDicWhenQuery.contains(s)) {
                 sentenseUnStopsWords.add(s);
             }
         }
@@ -36,12 +39,16 @@ public class SentenseHandler {
         return senVerctor;
     }
 
-    public static float[][] getSentenceDicVector(String sentense, Map<String, float[]> wordVectorMap){
+    /**
+     * 获取句子中每个词的词向量
+     * */
+    public static float[][] getSentenceDicVector(String sentense, Map<String, float[]> wordVectorMap, List<String> extraDicWhenQuery){
         JiebaSegmenter segmenter = new JiebaSegmenter();
         List<String> sentenseLineWords = segmenter.sentenceProcess(sentense);
         List<String> sentenseUnStopsWords = Lists.newArrayList();
         for (String s : sentenseLineWords) {
-            if (!ReduceFile.stop_words.contains(s)) {
+            if (!ReduceFile.stop_words.contains(s) && !extraDicWhenQuery.contains(s)) {
+//            if (!ReduceFile.stop_words.contains(s)) {
                 sentenseUnStopsWords.add(s);
             }
         }
@@ -63,10 +70,13 @@ public class SentenseHandler {
         return sentDicVector;
     }
 
-    public static Map<String, Float> getSentenceSimilarVector(String sentence, Map<String, float[]> wordVectorMap, int length) {
+    /**
+     * 获取句子相似的词向量组，这个词向量组是通过句子中的每个词取其最相似的词
+     * */
+    public static Map<String, Float> getSentenceSimilarVector(String sentence, Map<String, float[]> wordVectorMap, int length, List<String> extraDicWhenQuery) {
         Map<String, Float> resultMap = Maps.newHashMap();
         List<MatchResultBean> resultBeanList = Lists.newArrayList();
-        float[][] sentenceDicVector = getSentenceDicVector(sentence, wordVectorMap);
+        float[][] sentenceDicVector = getSentenceDicVector(sentence, wordVectorMap, extraDicWhenQuery);
         for (int i = 0; i <sentenceDicVector.length; i++) {
             List<MatchResultBean> tmpBeans = Lists.newArrayList();
             for (Map.Entry<String, float[]> entry : wordVectorMap.entrySet()) {
@@ -86,6 +96,9 @@ public class SentenseHandler {
         return resultMap;
     }
 
+    /**
+     * 获取两个词向量组的相似度
+     * */
     public static float getSentenceSimilar(Map<String, Float> first, Map<String, Float> second) {
         float sum = 0;
         float firstLength = 0;
@@ -108,6 +121,9 @@ public class SentenseHandler {
     }
 
 
+    /**
+     * 两个向量的相似度
+     * */
     public static float getSimilar(float[] first, float[] second) {
         if (first.length != second.length) {
             return 0;

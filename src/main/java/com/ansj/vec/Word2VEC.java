@@ -20,11 +20,14 @@ import com.google.common.collect.Maps;
 public class Word2VEC {
 	private static int mostSimilarLength = 100;
 
+	private static List<String> extraDicWhenQuery = Lists.newArrayList("这","这个","楼盘","房","房子");
+
 	public static void main(String[] args) throws IOException {
 
 		Word2VEC word2VEC = new Word2VEC();
 //		word2VEC.loadJavaModelSelf("/Users/liweipeng/myProject/hackathon/vectordata//wordvector.txt");
-		word2VEC.loadJavaModelSelf("/Users/lvlonglong/hacker2017/wordvector_loupan.txt");
+//		word2VEC.loadJavaModelSelf("/Users/lvlonglong/hacker2017/loupan/wordvector/wordvector_2.txt");
+		word2VEC.loadJavaModelSelfByFolder("/Users/lvlonglong/hacker2017/loupan/wordvector/news_loupan_dianping/");
 		System.out.println("词的数量:" + word2VEC.wordMap.size());
 		//获取词典
 		List<String> dictionary = Lists.newArrayList();
@@ -34,50 +37,23 @@ public class Word2VEC {
 
 		BufferedReader strin=new BufferedReader(new InputStreamReader(System.in));
 
-		List<String> groupInfoDictionary = Lists.newArrayList();
-		groupInfoDictionary.add("价格");
-		groupInfoDictionary.add("户型");
-		groupInfoDictionary.add("周边");
-		groupInfoDictionary.add("位置");
-		groupInfoDictionary.add("简介");
-
+		List<String> groupInfoDictionary = Lists.newArrayList("物业","特色优点特点","地理位置地址区域","价格总价","别名名称","销售状态开盘日期","产权年限","交通地铁公交","开发商","简介描述基本信息","绿化率绿化容积率","建筑面积占地面积","总户数楼栋总数","停车位","附近周边周围","供水供暖","装修","建筑类型","建成年代","户型");
 
 		Map<String, float[]> groupDicVector = Maps.newHashMap();
 		for (String s : groupInfoDictionary) {
-			groupDicVector.put(s, SentenseHandler.getSentenceVerctor(s, word2VEC.wordMap));
+			groupDicVector.put(s, SentenseHandler.getSentenceVerctor(s, word2VEC.wordMap, extraDicWhenQuery));
 		}
 
-
-//		while (true)  {
-//			System.out.print("请输入一个字符串(-1结束)：");
-//			String sentence = strin.readLine();
-//			if (!sentence.equals("-1")){
-//				List<MatchResultBean> matchResultBeanList = Lists.newArrayList();
-//				float[] sentenceVector = SentenseHandler.getSentenceVerctor(sentence, word2VEC.wordMap);
-////				System.out.println("相近词：" + word2VEC.distance(sentence));
-//				for (Entry<String, float[]> entry : groupDicVector.entrySet()) {
-//					matchResultBeanList.add(MatchResultBean.of(entry.getKey(), SentenseHandler.getSimilar(sentenceVector, entry.getValue())));
-//				}
-//				Collections.sort(matchResultBeanList);
-//
-//				for (MatchResultBean m : matchResultBeanList) {
-//					System.out.println(m);
-//				}
-//			}else{
-//				break;
-//			}
-//		}
 
 		while (true)  {
 			System.out.print("请输入一个字符串(-1结束)：");
 			String sentence = strin.readLine();
 			if (!sentence.equals("-1")){
 				List<MatchResultBean> matchResultBeanList = Lists.newArrayList();
-				//获取输入语句的词向量
-				Map<String, Float> inputVectorMap = SentenseHandler.getSentenceSimilarVector(sentence, word2VEC.wordMap, mostSimilarLength);
+				float[] sentenceVector = SentenseHandler.getSentenceVerctor(sentence, word2VEC.wordMap, extraDicWhenQuery);
+//				System.out.println("相近词：" + word2VEC.distance(sentence));
 				for (Entry<String, float[]> entry : groupDicVector.entrySet()) {
-					Map<String, Float> currentPropertyVectorMap = SentenseHandler.getSentenceSimilarVector(entry.getKey(), word2VEC.wordMap, mostSimilarLength);
-					matchResultBeanList.add(MatchResultBean.of(entry.getKey(), SentenseHandler.getSentenceSimilar(inputVectorMap, currentPropertyVectorMap)));
+					matchResultBeanList.add(MatchResultBean.of(entry.getKey(), SentenseHandler.getSimilar(sentenceVector, entry.getValue())));
 				}
 				Collections.sort(matchResultBeanList);
 
@@ -88,6 +64,27 @@ public class Word2VEC {
 				break;
 			}
 		}
+
+//		while (true)  {
+//			System.out.print("请输入一个字符串(-1结束)：");
+//			String sentence = strin.readLine();
+//			if (!sentence.equals("-1")){
+//				List<MatchResultBean> matchResultBeanList = Lists.newArrayList();
+//				//获取输入语句的词向量
+//				Map<String, Float> inputVectorMap = SentenseHandler.getSentenceSimilarVector(sentence, word2VEC.wordMap, mostSimilarLength, extraDicWhenQuery);
+//				for (Entry<String, float[]> entry : groupDicVector.entrySet()) {
+//					Map<String, Float> currentPropertyVectorMap = SentenseHandler.getSentenceSimilarVector(entry.getKey(), word2VEC.wordMap, mostSimilarLength, extraDicWhenQuery);
+//					matchResultBeanList.add(MatchResultBean.of(entry.getKey(), SentenseHandler.getSentenceSimilar(inputVectorMap, currentPropertyVectorMap)));
+//				}
+//				Collections.sort(matchResultBeanList);
+//
+//				for (MatchResultBean m : matchResultBeanList) {
+//					System.out.println(m);
+//				}
+//			}else{
+//				break;
+//			}
+//		}
 	}
 
 	private HashMap<String, float[]> wordMap = new HashMap<String, float[]>();
@@ -95,8 +92,6 @@ public class Word2VEC {
 	private int words;
 	private int size;
 	private int topNSize = 10;
-
-
 
 
 	/**
@@ -179,6 +174,22 @@ public class Word2VEC {
 			}
 
 		}
+	}
+
+	private void loadJavaModelSelfByFolder(String path) {
+		File file=new File(path);
+		File[] tempList = file.listFiles();
+		for (int i = 0; i < tempList.length; i++) {
+			if (tempList[i].isFile()) {
+				if (tempList[i].toString().contains(".DS_Store")) {
+					continue;
+				}
+				this.loadJavaModelSelf(tempList[i].toString());
+			} else {
+				this.loadJavaModelSelfByFolder(tempList[i].getAbsolutePath());
+			}
+		}
+		System.out.println("map size:" + wordMap.size());
 	}
 
 	private void loadJavaModelSelf(String path) {
