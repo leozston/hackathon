@@ -18,12 +18,8 @@ import com.huaban.analysis.jieba.JiebaSegmenter;
  * Created by lvlonglong on 2017/4/7.
  */
 public class ReduceFile {
-//    private static String focus_data_pre = "/Users/lvlonglong/hacker2017/test";   //数据预处理之前路径
-//    private static String focus_data_pre = "/Users/liweipeng/myProject/hackathon/predata";   //数据预处理之前路径
     private static String focus_data_pre = "/Users/lvlonglong/hacker2017/loupan/content/";   //数据预处理之前路径
-//    private static String focus_data_reduce = "/Users/liweipeng/myProject/hackathon/reducedata/reduce_data.txt";   //数据预处理之后路径
-    private static String focus_data_reduce = "/Users/lvlonglong/hacker2017/loupan/segment/reduce_loupan_data.txt";
-//    private static String stop_words_path = "/Users/liweipeng/myProject/hackathon/stopwords.txt";
+    private static String focus_data_reduce = "/Users/lvlonglong/hacker2017/loupan/segment/reduce_loupan_data_3.txt";
     public static String stop_words_path = "/Users/lvlonglong/hacker2017/stopwords.txt";
     public static List<String> stop_words = Lists.newArrayList();
 
@@ -197,8 +193,8 @@ public class ReduceFile {
         ReduceFile reduceFile = new ReduceFile();
 //        reduceFile.readStopWords(stop_words_path);
 //        reduceFile.dataPreProcess(focus_data_pre);
-        String fromPath = "/Users/lvlonglong/hacker2017/wiki_chinese/predata/predata_7.txt";
-        String toPath = "/Users/lvlonglong/hacker2017/loupan/segment/reduce_loupan_data.txt";
+        String fromPath = "/Users/lvlonglong/hacker2017/wiki_chinese/predata/predata_3.txt";
+        String toPath = "/Users/lvlonglong/hacker2017/loupan/segment/reduce_loupan_data_3.txt";
         reduceFile.readAndWrite(fromPath, toPath);
     }
 }

@@ -71,7 +71,6 @@ public class LoupanCommentCrawler {
             String backContent = "";
             String line = "";
             while ((line = bufferedReader.readLine()) != null) {
-//                System.out.println(line);
                 backContent += line;
             }
             //对返回的内容进行解析
@@ -86,7 +85,6 @@ public class LoupanCommentCrawler {
                 JSONObject tmp = (JSONObject)commentList.get(i);
                 String comment = (String)tmp.get("content");
                 currentPageString += comment + "\n";
-//                System.out.println(comment);
             }
             bufferedReader.close();
             inputStreamReader.close();

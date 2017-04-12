@@ -460,27 +460,9 @@ public class Learn {
         Learn learn = new Learn();
         long start = System.currentTimeMillis();
         System.out.println("start");
-//        learn.learnFile(new File("/Users/liweipeng/myProject/hackathon/reducedata//reduce_data.txt"));
-//        learn.learnFile(new File("/Users/lvlonglong/hacker2017/crawldata/reduce_loupan_data.txt"));
-//        learn.learnFile(new File("/Users/lvlonglong/hacker2017/wiki_chinese/去除stopword/predata_4.txt"));
-        learn.learnFile(new File("/Users/lvlonglong/hacker2017/loupan/segment/reduce_loupan_data_2.txt"));
+        learn.learnFile(new File("/Users/lvlonglong/hacker2017/loupan/segment/reduce_loupan_data_3.txt"));
         System.out.println("use time " + (System.currentTimeMillis() - start));
-//        Map<String, float[]> wordVectorMap = learn.saveModel(new File("/Users/lvlonglong/hacker2017/wordvector_loupan.txt"));
-//        Map<String, float[]> wordVectorMap = learn.saveModel(new File("/Users/lvlonglong/hacker2017/wiki_chinese/wordvector/wordvector_4.txt"));
-        String modelFile = "/Users/lvlonglong/hacker2017/loupan/wordvector/news_loupan/wordvector_%s.txt";
+        String modelFile = "/Users/lvlonglong/hacker2017/loupan/wordvector/news_loupan_dianping_3/wordvector_%s.txt";
         Map<String, float[]> wordVectorMap = learn.saveModel(modelFile);
-//        Word2VEC word2VEC = new Word2VEC();
-//        word2VEC.setWordMap(new HashMap<String, float[]>(wordVectorMap));
-//        System.out.println("词的数量:" + wordVectorMap.size());
-//        BufferedReader strin=new BufferedReader(new InputStreamReader(System.in));
-//        while (true)  {
-//            System.out.print("请输入一个字符串(-1结束)：");
-//            String str = strin.readLine();
-//            if (!str.equals("-1")){
-//                System.out.println("相近词：" + word2VEC.distance(str));
-//            }else{
-//                break;
-//            }
-//        }
     }
 }

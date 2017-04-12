@@ -15,6 +15,7 @@ import com.huaban.analysis.jieba.JiebaSegmenter;
  * Created by liweipeng on 2017/4/7.
  */
 public class SentenseHandler {
+
     /**
      * 获取整个句子的词向量
      * */
@@ -38,6 +39,29 @@ public class SentenseHandler {
         }
         return senVerctor;
     }
+
+    /**
+     * 获取句子每个词的词向量map结构返回
+     * */
+    public static Map<String, float[]> getSentenceDicMap(String sentense, Map<String, float[]> wordVectorMap, List<String> extraDicWhenQuery) {
+        JiebaSegmenter segmenter = new JiebaSegmenter();
+        List<String> sentenseLineWords = segmenter.sentenceProcess(sentense);
+        List<String> sentenseUnStopsWords = Lists.newArrayList();
+        for (String s : sentenseLineWords) {
+            if (!ReduceFile.stop_words.contains(s) && !extraDicWhenQuery.contains(s)) {
+                sentenseUnStopsWords.add(s);
+            }
+        }
+        Map<String, float[]> result = Maps.newHashMap();
+        for(String word : sentenseUnStopsWords){
+            if (wordVectorMap.containsKey(word)){
+                float[] wordVector = wordVectorMap.get(word);
+                result.put(word, wordVector);
+            }
+        }
+        return result;
+    }
+
 
     /**
      * 获取句子中每个词的词向量
