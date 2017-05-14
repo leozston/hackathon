@@ -368,56 +368,49 @@ public class Learn {
     /**
      * 保存模型
      */
-    public Map<String, float[]> saveModel(File file) {
-        // TODO Auto-generated method stub
-
-//        try (DataOutputStream dataOutputStream = new DataOutputStream(
-//                new BufferedOutputStream(new FileOutputStream(file)))) {
-//            dataOutputStream.writeInt(wordMap.size());
-//            dataOutputStream.writeInt(layerSize);
-//            double[] syn0 = null;
-//            for (Entry<String, Neuron> element : wordMap.entrySet()) {
-//                dataOutputStream.writeUTF(element.getKey());
-//                syn0 = ((WordNeuron) element.getValue()).syn0;
-//                for (double d : syn0) {
-//                    dataOutputStream.writeFloat(((Double) d).floatValue());
-//                }
-//            }
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
+    public Map<String, float[]> saveModel(String modelFile) throws IOException {
         Map<String, float[]> resultMap = Maps.newHashMap();
-        try {
-            FileWriter writer = null;
-            writer = new FileWriter(file, true);
-//            BufferedWriter bw = new BufferedWriter(writer);
-//            bw.write(wordMap.size());
-//            bw.write("\n");
-//            bw.write(layerSize);
-            double[] syn0 = null;
-            for (Entry<String, Neuron> element : wordMap.entrySet()) {
-                if (element.getKey().trim().length() == 0) {
-                    continue;
-                }
-                writer.write(element.getKey());
-                syn0 = ((WordNeuron) element.getValue()).syn0;
-                writer.write(" ");
-                float[] tmpFloat = new float[layerSize];
-                String doubleString = "";
-                int indexDoubleToFloat = 0;
-                for (double d : syn0) {
-                    doubleString += ((Double) d).floatValue() + ",";
-                    tmpFloat[indexDoubleToFloat] =((Double) d).floatValue();
-                    indexDoubleToFloat++;
-                }
-                doubleString = doubleString.substring(0, doubleString.length() - 1);
-                doubleString += "\n";
-                writer.write(doubleString);
-                resultMap.put(element.getKey(), tmpFloat);
+
+        int fileIndex = 0;
+        String path = String.format(modelFile, fileIndex);
+
+        File file = new File(path);
+
+        FileWriter writer = new FileWriter(file, true);
+        BufferedWriter bw = new BufferedWriter(writer);
+        int index = 0;
+        double[] syn0 = null;
+        for (Entry<String, Neuron> element : wordMap.entrySet()) {
+            if (element.getKey().trim().length() == 0) {
+                continue;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            StringBuffer sb = new StringBuffer("");
+            sb.append(element.getKey() + " ");
+            syn0 = ((WordNeuron) element.getValue()).syn0;
+            float[] tmpFloat = new float[layerSize];
+            String doubleString = "";
+            int indexDoubleToFloat = 0;
+            for (double d : syn0) {
+                doubleString += ((Double) d).floatValue() + ",";
+                tmpFloat[indexDoubleToFloat] =((Double) d).floatValue();
+                indexDoubleToFloat++;
+            }
+            doubleString = doubleString.substring(0, doubleString.length() - 1);
+            doubleString += "\n";
+            sb.append(doubleString);
+            bw.write(sb.toString());
+            bw.flush();
+            index++;
+            if (index % 500 == 0) {
+                System.out.println(index);
+            }
+            if (index % 10000 == 0) {
+                fileIndex++;
+                path = String.format(modelFile, fileIndex);
+                file = new File(path);
+                writer = new FileWriter(file, true);
+                bw = new BufferedWriter(writer);
+            }
         }
         return resultMap;
     }
@@ -469,7 +462,7 @@ public class Learn {
         System.out.println("start");
         learn.learnFile(new File("C:\\Users\\leoz\\Desktop\\hacker2017project\\info\\predata_3.txt"));
         System.out.println("use time " + (System.currentTimeMillis() - start));
-        Map<String, float[]> wordVectorMap = learn.saveModel(new File("C:\\Users\\leoz\\Desktop\\hacker2017project\\info\\wordvector_4.txt"));
+//        Map<String, float[]> wordVectorMap = learn.saveModel(new File("C:\\Users\\leoz\\Desktop\\hacker2017project\\info\\wordvector_4.txt"));
 
 //        Word2VEC word2VEC = new Word2VEC();
 //        word2VEC.setWordMap(new HashMap<String, float[]>(wordVectorMap));
@@ -484,5 +477,9 @@ public class Learn {
 //                break;
 //            }
 //        }
+        learn.learnFile(new File("/Users/lvlonglong/hacker2017/loupan/segment/reduce_loupan_data_3.txt"));
+        System.out.println("use time " + (System.currentTimeMillis() - start));
+        String modelFile = "/Users/lvlonglong/hacker2017/loupan/wordvector/news_loupan_dianping_3/wordvector_%s.txt";
+        Map<String, float[]> wordVectorMap = learn.saveModel(modelFile);
     }
 }

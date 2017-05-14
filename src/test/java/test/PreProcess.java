@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.List;
 
+
 /**
  * Created by leoz on 2017/4/3.
  */
@@ -21,17 +22,14 @@ public class PreProcess {
         try {
             StringBuffer sb = new StringBuffer("");
 
-            FileReader reader = new FileReader("C:\\Users\\leoz\\Desktop\\hacker2017project\\info\\wiki_chinese_preprocessed.simplied.txt");
-//            FileReader reader = new FileReader("C:\\Users\\leoz\\Desktop\\hacker2017project\\info\\wordvector.txt");
+            FileReader reader = new FileReader("/Users/lvlonglong/hacker2017/wiki_chinese/segment_data/wiki_chinese_preprocessed.simplied.txt");
             BufferedReader br = new BufferedReader(reader);
 
             String str = null;
-
             int index = 0;
             // write string to file
             FileWriter writer = new FileWriter("C:\\Users\\leoz\\Desktop\\hacker2017project\\info\\predata_1.txt", true);
             BufferedWriter bw = new BufferedWriter(writer);
-
 
             while ((str = br.readLine()) != null) {
                 index++;
@@ -43,7 +41,7 @@ public class PreProcess {
                     }
                 }
 
-                String result = StringUtils.join(resultList, " ");
+                String result = org.apache.commons.lang.StringUtils.join(resultList, " ");
                 sb.append(result + "\n");
 //                sb.append(str + "/n");
                 System.out.println(result);
@@ -53,6 +51,10 @@ public class PreProcess {
                     bw.write(sb.toString());
                     sb = new StringBuffer("");
 //                }
+                bw.write(sb.toString());
+                bw.flush();
+                sb = new StringBuffer("");
+                System.out.println(index);
             }
 
             br.close();
@@ -69,6 +71,7 @@ public class PreProcess {
     public static void main(String[] args) {
         ReduceFile reduceFile = new ReduceFile();
         reduceFile.readStopWords(ReduceFile.stop_words_path);
+        reduceFile.readStopWords("/Users/lvlonglong/hacker2017/stopwords.txt");
         PreProcess preProcess = new PreProcess();
         preProcess.getSomeData();
     }

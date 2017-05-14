@@ -13,33 +13,163 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.ansj.vec.domain.WordEntry;
+import com.ansj.vec.model.MatchResultBean;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.huaban.analysis.jieba.JiebaSegmenter;
 
 public class Word2VEC {
+	private static int mostSimilarLength = 100;
 
-	public static void main(String[] args) throws IOException {
-
-		Word2VEC word2VEC = new Word2VEC();
-		word2VEC.loadJavaModelSelf("/Users/liweipeng/myProject/hackathon/vectordata//wordvector.txt");
-		System.out.println("词的数量:" + word2VEC.wordMap.size());
-		BufferedReader strin=new BufferedReader(new InputStreamReader(System.in));
-		while (true)  {
-			System.out.print("请输入一个字符串(-1结束)：");
-			String sentence = strin.readLine();
-			if (!sentence.equals("-1")){
-				float[] sentenceVector = SentenseHandler.getSentenceVerctor(sentence, word2VEC.wordMap);
-				System.out.println("相近词：" + word2VEC.distance(sentence));
-			}else{
-				break;
-			}
-		}
-	}
-
-	private HashMap<String, float[]> wordMap = new HashMap<String, float[]>();
+	private static List<String> extraDicWhenQuery = Lists.newArrayList("这","这个","楼盘","房","房子","什么");
+	private static HashMap<String, float[]> wordMap = new HashMap<String, float[]>();
 
 	private int words;
 	private int size;
 	private int topNSize = 10;
+
+	public static final Map<String, Integer> groupInfoDictionaryMap = ImmutableMap.<String, Integer>builder()
+			.put("物业", 1)
+			.put("特色优点特点", 2)
+			.put("位置地址区域地理", 3)
+			.put("价格总价", 4)
+			.put("别名名称名字", 5)
+			.put("销售状态开盘日期", 6)
+			.put("产权年限", 7)
+			.put("交通地铁公交", 8)
+			.put("开发商", 9)
+			.put("简介描述基本信息", 10)
+			.put("绿化率绿化容积率", 11)
+			.put("建筑面积占地面积面积", 12)
+			.put("总户数楼栋总数户数", 13)
+			.put("停车位", 14)
+			.put("附近周边周围", 15)
+			.put("供水供暖", 16)
+			.put("装修", 17)
+			.put("建筑类型", 18)
+			.put("建成年代", 19)
+			.put("户型", 20)
+			.build();
+
+	private static float word_to_word_min_similar = 0.5f;
+	private static float sentence_to_sentence_min_similar = 0.2f;
+
+	public static void main(String[] args) throws IOException {
+
+		Word2VEC word2VEC = new Word2VEC();
+		word2VEC.loadJavaModelSelfByFolder("/Users/lvlonglong/hacker2017/loupan/wordvector/news_loupan_3/");
+		System.out.println("词的数量:" + word2VEC.wordMap.size());
+		JiebaSegmenter segmenter = new JiebaSegmenter();
+		for (String s : groupInfoDictionaryMap.keySet()) {
+			System.out.println(segmenter.sentenceProcess(s));
+		}
+
+		BufferedReader strin=new BufferedReader(new InputStreamReader(System.in));
+//		Map<String, float[]> groupDicVector = Maps.newHashMap();
+//		for (String s : groupInfoDictionaryMap.keySet()) {
+//			groupDicVector.put(s, SentenseHandler.getSentenceVerctor(s, word2VEC.wordMap, extraDicWhenQuery));
+//		}
+		while (true)  {
+			System.out.print("请输入一个字符串(-1结束)：");
+			String sentence = strin.readLine();
+			System.out.println("输入：" + segmenter.sentenceProcess(sentence));
+			if (!sentence.equals("-1")){
+//				List<MatchResultBean> matchResultBeanList = Lists.newArrayList();
+//				float[] sentenceVector = SentenseHandler.getSentenceVerctor(sentence, word2VEC.wordMap, extraDicWhenQuery);
+////				System.out.println("相近词：" + word2VEC.distance(sentence));
+//				for (Entry<String, float[]> entry : groupDicVector.entrySet()) {
+//					matchResultBeanList.add(MatchResultBean.of(entry.getKey(), SentenseHandler.getSimilar(sentenceVector, entry.getValue())));
+//				}
+//				Collections.sort(matchResultBeanList);
+//
+//				for (MatchResultBean m : matchResultBeanList) {
+//					System.out.println(m);
+//				}
+
+
+				int type = getSentenceType(sentence);
+				System.out.println("结果类型：" + type);
+			}else{
+				break;
+			}
+		}
+
+//		while (true)  {
+//			System.out.print("请输入一个字符串(-1结束)：");
+//			String sentence = strin.readLine();
+//			if (!sentence.equals("-1")){
+//				List<MatchResultBean> matchResultBeanList = Lists.newArrayList();
+//				//获取输入语句的词向量
+//				Map<String, Float> inputVectorMap = SentenseHandler.getSentenceSimilarVector(sentence, word2VEC.wordMap, mostSimilarLength, extraDicWhenQuery);
+//				for (Entry<String, float[]> entry : groupDicVector.entrySet()) {
+//					Map<String, Float> currentPropertyVectorMap = SentenseHandler.getSentenceSimilarVector(entry.getKey(), word2VEC.wordMap, mostSimilarLength, extraDicWhenQuery);
+//					matchResultBeanList.add(MatchResultBean.of(entry.getKey(), SentenseHandler.getSentenceSimilar(inputVectorMap, currentPropertyVectorMap)));
+//				}
+//				Collections.sort(matchResultBeanList);
+//
+//				for (MatchResultBean m : matchResultBeanList) {
+//					System.out.println(m);
+//				}
+//			}else{
+//				break;
+//			}
+//		}
+	}
+
+
+	/**
+	 * 向外提供的接口，输入一句话，返回一个类型:
+	 * type 1~20  类型一
+	 * type 998   类型二
+	 * type 998   类型三
+	 * */
+	public static int getSentenceType(String sentence) {
+		//通过sentence获取map<String, float[]>
+		Map<String, float[]> sentenceDicMap = SentenseHandler.getSentenceDicMap(sentence, wordMap, extraDicWhenQuery);
+		boolean isTypeOne = false;
+		//比较sentence的map和第一种类型中的各个值
+		tag:for (String s : groupInfoDictionaryMap.keySet()) {
+			Map<String, float[]> currentDicMap = SentenseHandler.getSentenceDicMap(s, wordMap, extraDicWhenQuery);
+			for (Map.Entry<String, float[]> currentEntry : currentDicMap.entrySet()) {
+				for (Map.Entry<String, float[]> sentenceEntry : sentenceDicMap.entrySet()) {
+					System.out.println(currentEntry.getKey() + "," + sentenceEntry.getKey() + ":" + SentenseHandler.getSimilar(currentEntry.getValue(), sentenceEntry.getValue()));
+					if (SentenseHandler.getSimilar(currentEntry.getValue(), sentenceEntry.getValue()) > word_to_word_min_similar) {
+						isTypeOne = true;
+						break tag;
+					}
+				}
+			}
+		}
+
+		//是第二种或第三种类型
+		if (!isTypeOne) {
+			return 998;
+		}
+		//第一种类型
+		Map<String, float[]> typeDicMap = Maps.newHashMap();
+		for (String s : groupInfoDictionaryMap.keySet()) {
+			typeDicMap.put(s, SentenseHandler.getSentenceVerctor(s, wordMap, extraDicWhenQuery));
+		}
+		List<MatchResultBean> matchResultBeanList = Lists.newArrayList();
+		float[] sentenceVector = SentenseHandler.getSentenceVerctor(sentence, wordMap, extraDicWhenQuery);
+		for (Entry<String, float[]> entry : typeDicMap.entrySet()) {
+			matchResultBeanList.add(MatchResultBean.of(entry.getKey(), SentenseHandler.getSimilar(sentenceVector, entry.getValue())));
+		}
+		Collections.sort(matchResultBeanList);
+		if (!matchResultBeanList.isEmpty()) {
+			if (matchResultBeanList.get(0).getScore() < sentence_to_sentence_min_similar) {   //如果相似度过小，也返回第二三两种类型
+				return 998;
+			} else {
+				System.out.println("匹配结果：" + matchResultBeanList.get(0).getMatchedName());
+				return groupInfoDictionaryMap.get(matchResultBeanList.get(0).getMatchedName());
+			}
+		} else {
+			return 998;
+		}
+	}
+
+
 
 	/**
 	 * 加载模型
@@ -121,6 +251,22 @@ public class Word2VEC {
 			}
 
 		}
+	}
+
+	private void loadJavaModelSelfByFolder(String path) {
+		File file=new File(path);
+		File[] tempList = file.listFiles();
+		for (int i = 0; i < tempList.length; i++) {
+			if (tempList[i].isFile()) {
+				if (tempList[i].toString().contains(".DS_Store")) {
+					continue;
+				}
+				this.loadJavaModelSelf(tempList[i].toString());
+			} else {
+				this.loadJavaModelSelfByFolder(tempList[i].getAbsolutePath());
+			}
+		}
+		System.out.println("map size:" + wordMap.size());
 	}
 
 	private void loadJavaModelSelf(String path) {

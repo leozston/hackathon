@@ -18,10 +18,16 @@ import com.huaban.analysis.jieba.JiebaSegmenter;
  * Created by lvlonglong on 2017/4/7.
  */
 public class ReduceFile {
+<<<<<<< HEAD
 //    private static String focus_data_pre = "/Users/lvlonglong/hacker2017/test";   //数据预处理之前路径
     private static String focus_data_pre = "/Users/liweipeng/myProject/hackathon/predata";   //数据预处理之前路径
     private static String focus_data_reduce = "/Users/liweipeng/myProject/hackathon/reducedata/reduce_data.txt";   //数据预处理之后路径
     public static String stop_words_path = "C:\\Users\\leoz\\Desktop\\hacker2017project\\stopwords.txt";
+=======
+    private static String focus_data_pre = "/Users/lvlonglong/hacker2017/loupan/content/";   //数据预处理之前路径
+    private static String focus_data_reduce = "/Users/lvlonglong/hacker2017/loupan/segment/reduce_loupan_data_3.txt";
+    public static String stop_words_path = "/Users/lvlonglong/hacker2017/stopwords.txt";
+>>>>>>> bacdd0d4a1968a8204fa17a0054841f37fa3351b
     public static List<String> stop_words = Lists.newArrayList();
 
     public void readStopWords(String path) {
@@ -87,7 +93,7 @@ public class ReduceFile {
         String line = null;
         String fileContent = "";
         try {
-            while ((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null && line.length() > 0) {
                 List<String> currentLineWords = segmenter.sentenceProcess(line);
                 List<String> currentLineUnStopsWords = Lists.newArrayList();
                 for (String s : currentLineWords) {
@@ -135,9 +141,67 @@ public class ReduceFile {
     }
 
 
+    public void readAndWrite(String fromPath, String toPath) {
+        FileReader reader = null;
+        //写文件
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(toPath, true);
+        } catch (IOException e) {
+            System.out.println("写文件目录出错");
+            e.printStackTrace();
+        }
+        BufferedWriter bw = new BufferedWriter(writer);
+
+
+        JiebaSegmenter segmenter = new JiebaSegmenter();
+        try {
+            reader = new FileReader(fromPath);
+        } catch (FileNotFoundException e) {
+            System.out.println("***********文件路径错误*********");
+            e.printStackTrace();
+        }
+        BufferedReader br = new BufferedReader(reader);
+        String line = null;
+        int index = 0;
+        try {
+            while ((line = br.readLine()) != null && line.length() > 0) {
+                bw.write(line + "\n");
+                index++;
+                if (index % 100 == 0) {
+                    System.out.println(index);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("***********读取文件失败************");
+            e.printStackTrace();
+        }
+
+        try {
+            br.close();
+            reader.close();
+        } catch (IOException e) {
+            System.out.println("***********关闭读文件流失败************");
+            e.printStackTrace();
+        }
+
+        try {
+            bw.close();
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("关闭写文件流出错");
+            e.printStackTrace();
+        }
+    }
+
+
+
     public static void main(String[] args) {
         ReduceFile reduceFile = new ReduceFile();
-        reduceFile.readStopWords(stop_words_path);
-        reduceFile.dataPreProcess(focus_data_pre);
+//        reduceFile.readStopWords(stop_words_path);
+//        reduceFile.dataPreProcess(focus_data_pre);
+        String fromPath = "/Users/lvlonglong/hacker2017/wiki_chinese/predata/predata_3.txt";
+        String toPath = "/Users/lvlonglong/hacker2017/loupan/segment/reduce_loupan_data_3.txt";
+        reduceFile.readAndWrite(fromPath, toPath);
     }
 }

@@ -5,7 +5,7 @@ package com.ansj.vec.model;
  */
 public class MatchResultBean implements Comparable{
     private String matchedName;
-    private double score;
+    private float score;
 
     public String getMatchedName() {
         return matchedName;
@@ -15,20 +15,20 @@ public class MatchResultBean implements Comparable{
         this.matchedName = matchedName;
     }
 
-    public double getScore() {
+    public float getScore() {
         return score;
     }
 
-    public void setScore(double score) {
+    public void setScore(float score) {
         this.score = score;
     }
 
-    public MatchResultBean(String matchedName, double score) {
+    public MatchResultBean(String matchedName, float score) {
         this.matchedName = matchedName;
         this.score = score;
     }
 
-    public static MatchResultBean of(String matchedName, double score) {
+    public static MatchResultBean of(String matchedName, float score) {
         return new MatchResultBean(matchedName, score);
     }
 
@@ -36,5 +36,10 @@ public class MatchResultBean implements Comparable{
     public int compareTo(Object o) {
         MatchResultBean other = (MatchResultBean)o;
         return this.score > other.score ? -1 : 1;
+    }
+
+    @Override
+    public String toString() {
+        return "matchname:" + matchedName + ",score:" + score;
     }
 }

@@ -16,10 +16,10 @@ import java.util.List;
  * Created by leoz on 2017/4/9.
  */
 public class LoupanCommentCrawler {
-    public static String loupanCommentPath = "C:\\Users\\leoz\\Desktop\\hacker2017project\\loupancomment\\";
+    public static String loupanCommentPath = "/Users/lvlonglong/hacker2017/others/";
 
 
-    public void getContent(String loupanGroupIdString) {
+    public void getContent(String loupanGroupIdString, String cityId) {
         int pageIndex = 0;
         String[] loupanArray = loupanGroupIdString.split(",");
         List<String> loupanGroupIdList = Lists.newArrayList();
@@ -27,15 +27,15 @@ public class LoupanCommentCrawler {
             loupanGroupIdList.add(loupanArray[i]);
         }
 
-        String urlFormat = "http://house.focus.cn/api/getdianping/?group_id=%s&city_id=1&page=%s&page_size=10";
+        String urlFormat = "http://house.focus.cn/api/getdianping/?group_id=%s&city_id=%s&page=%s&page_size=100";
         //遍历楼盘id获取楼盘评论内容
         for (String groupId : loupanGroupIdList) {
-            System.out.println("楼盘id:" + groupId);
+            System.out.println("cityid:" + cityId + ",楼盘id:" + groupId);
             pageIndex++;
             String currentGroupContent = "";
             int page = 1;
             while (true) {
-                String url = String.format(urlFormat, groupId, page + "");
+                String url = String.format(urlFormat, groupId, cityId, page + "");
                 String currentPageString = this.getCommentContent(url);
                 if (currentPageString.length() == 0) {
                     break;   //推出当前楼盘评论内容的获取
@@ -49,9 +49,9 @@ public class LoupanCommentCrawler {
             try {
                 System.out.println("crawler have a rest");
                 if (pageIndex % 20 == 0) {
-                    Thread.sleep(1000 * 60);
+                    Thread.sleep(1000 * 10);
                 } else {
-                    Thread.sleep(1000 * 2);
+                    Thread.sleep(200);
                 }
             } catch (InterruptedException e) {
                 System.out.println("thread sleep error");
@@ -71,7 +71,6 @@ public class LoupanCommentCrawler {
             String backContent = "";
             String line = "";
             while ((line = bufferedReader.readLine()) != null) {
-//                System.out.println(line);
                 backContent += line;
             }
             //对返回的内容进行解析
@@ -86,7 +85,6 @@ public class LoupanCommentCrawler {
                 JSONObject tmp = (JSONObject)commentList.get(i);
                 String comment = (String)tmp.get("content");
                 currentPageString += comment + "\n";
-//                System.out.println(comment);
             }
             bufferedReader.close();
             inputStreamReader.close();
@@ -99,7 +97,7 @@ public class LoupanCommentCrawler {
         }
     }
 
-    public void readGroupIdFile(String filePath) {
+    public void readGroupIdFile(String filePath, String cityId) {
         try {
             String encoding="GBK";
             File file=new File(filePath);
@@ -119,13 +117,13 @@ public class LoupanCommentCrawler {
                             continue;
                         }
                         groupContent = groupContent.substring(0, groupContent.length() - 1);
-                        this.getContent(groupContent);
+                        this.getContent(groupContent, cityId);
                         groupContent = "";
                     }
                 }
                 if (groupContent.length() > 0) {
                     groupContent = groupContent.substring(0, groupContent.length() - 1);
-                    this.getContent(groupContent);
+                    this.getContent(groupContent, cityId);
                 }
 
                 read.close();
@@ -141,6 +139,11 @@ public class LoupanCommentCrawler {
 
     public static void main(String[] args) {
         LoupanCommentCrawler loupanCommentCrawler = new LoupanCommentCrawler();
-        loupanCommentCrawler.readGroupIdFile("C:\\Users\\leoz\\Desktop\\hacker2017project\\groupId1.txt");
+//        loupanCommentCrawler.readGroupIdFile("C:\\Users\\leoz\\Desktop\\hacker2017project\\groupId1.txt");
+//        loupanCommentCrawler.readGroupIdFile("/Users/lvlonglong/hacker2017/groupId/others.txt");
+        List<Integer> cityIds = Lists.newArrayList(13, 14, 15, 16, 19, 18, 23, 22, 27, 29, 28, 30, 39, 40, 46, 50, 49, 48, 86, 83, 128, 222, 20, 25, 26, 34, 38, 36, 37, 42, 43, 47, 44, 55, 53, 84, 93, 92, 89, 88, 91, 90, 102, 100, 96, 97, 109, 104, 105, 119, 115, 126, 122, 120, 136, 141, 140, 142, 129, 131, 133, 132, 135, 134, 145, 147, 148, 171, 170, 169, 161, 167, 165, 187, 184, 185, 190, 188, 189, 179, 177, 181, 205, 207, 199, 223, 217, 219, 213, 214, 208, 209, 234, 305, 304, 307, 309);
+        for (Integer cityid : cityIds) {
+            loupanCommentCrawler.readGroupIdFile(String.format("/Users/lvlonglong/hacker2017/groupId/%s.txt", cityid + ""), cityid + "");
+        }
     }
 }
