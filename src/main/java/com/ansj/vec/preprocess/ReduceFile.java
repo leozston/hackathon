@@ -21,10 +21,10 @@ public class ReduceFile {
 //    private static String focus_data_pre = "/Users/lvlonglong/hacker2017/test";   //数据预处理之前路径
     private static String focus_data_pre = "/Users/liweipeng/myProject/hackathon/predata";   //数据预处理之前路径
     private static String focus_data_reduce = "/Users/liweipeng/myProject/hackathon/reducedata/reduce_data.txt";   //数据预处理之后路径
-    private static String stop_words_path = "/Users/liweipeng/myProject/hackathon/stopwords.txt";
+    public static String stop_words_path = "C:\\Users\\leoz\\Desktop\\hacker2017project\\stopwords.txt";
     public static List<String> stop_words = Lists.newArrayList();
 
-    private void readStopWords(String path) {
+    public void readStopWords(String path) {
         FileReader reader = null;
         JiebaSegmenter segmenter = new JiebaSegmenter();
         try {

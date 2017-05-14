@@ -1,9 +1,14 @@
 package test;
 
+import com.ansj.vec.preprocess.ReduceFile;
+import com.google.common.collect.Lists;
+import com.sun.deploy.util.StringUtils;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.List;
 
 /**
  * Created by leoz on 2017/4/3.
@@ -24,19 +29,30 @@ public class PreProcess {
 
             int index = 0;
             // write string to file
-            FileWriter writer = new FileWriter("C:\\Users\\leoz\\Desktop\\hacker2017project\\info\\predata.txt", true);
+            FileWriter writer = new FileWriter("C:\\Users\\leoz\\Desktop\\hacker2017project\\info\\predata_1.txt", true);
             BufferedWriter bw = new BufferedWriter(writer);
 
 
             while ((str = br.readLine()) != null) {
                 index++;
-                sb.append(str + "/n");
-                System.out.println(str);
-                if (index % 100 == 0) {
-                    index = 0;
+                String[] strList = str.split(" ");
+                List<String> resultList = Lists.newArrayList();
+                for (int i = 0; i < strList.length; i++) {
+                    if (!ReduceFile.stop_words.contains(strList[i])) {
+                        resultList.add(strList[i]);
+                    }
+                }
+
+                String result = StringUtils.join(resultList, " ");
+                sb.append(result + "\n");
+//                sb.append(str + "/n");
+                System.out.println(result);
+//                if (index % 100 == 0) {
+//                    index = 0;
 
                     bw.write(sb.toString());
-                }
+                    sb = new StringBuffer("");
+//                }
             }
 
             br.close();
@@ -51,6 +67,8 @@ public class PreProcess {
 
 
     public static void main(String[] args) {
+        ReduceFile reduceFile = new ReduceFile();
+        reduceFile.readStopWords(ReduceFile.stop_words_path);
         PreProcess preProcess = new PreProcess();
         preProcess.getSomeData();
     }

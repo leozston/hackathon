@@ -467,22 +467,22 @@ public class Learn {
         Learn learn = new Learn();
         long start = System.currentTimeMillis();
         System.out.println("start");
-        learn.learnFile(new File("/Users/liweipeng/myProject/hackathon/reducedata//reduce_data.txt"));
+        learn.learnFile(new File("C:\\Users\\leoz\\Desktop\\hacker2017project\\info\\predata_3.txt"));
         System.out.println("use time " + (System.currentTimeMillis() - start));
-        Map<String, float[]> wordVectorMap = learn.saveModel(new File("/Users/liweipeng/myProject/hackathon/vectordata//wordvector.txt"));
+        Map<String, float[]> wordVectorMap = learn.saveModel(new File("C:\\Users\\leoz\\Desktop\\hacker2017project\\info\\wordvector_4.txt"));
 
-        Word2VEC word2VEC = new Word2VEC();
-        word2VEC.setWordMap(new HashMap<String, float[]>(wordVectorMap));
-        System.out.println("词的数量:" + wordVectorMap.size());
-        BufferedReader strin=new BufferedReader(new InputStreamReader(System.in));
-        while (true)  {
-            System.out.print("请输入一个字符串(-1结束)：");
-            String str = strin.readLine();
-            if (!str.equals("-1")){
-                System.out.println("相近词：" + word2VEC.distance(str));
-            }else{
-                break;
-            }
-        }
+//        Word2VEC word2VEC = new Word2VEC();
+//        word2VEC.setWordMap(new HashMap<String, float[]>(wordVectorMap));
+//        System.out.println("词的数量:" + wordVectorMap.size());
+//        BufferedReader strin=new BufferedReader(new InputStreamReader(System.in));
+//        while (true)  {
+//            System.out.print("请输入一个字符串(-1结束)：");
+//            String str = strin.readLine();
+//            if (!str.equals("-1")){
+//                System.out.println("相近词：" + word2VEC.distance(str));
+//            }else{
+//                break;
+//            }
+//        }
     }
 }
